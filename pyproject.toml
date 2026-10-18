@@ -1,7 +1,7 @@
 [project]
 name = "taskflow"
 version = "0.1.0"
-description = "Add your description here"
+description = "Lightweight RESTful task manager built with FastAPI and PostgreSQL"
 readme = "README.md"
 authors = [
     { name = "DevLitos", email = "carlosgeminiedem@gmail.com" }

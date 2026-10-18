@@ -1,15 +1,22 @@
+# Orquestación de los servicios de TaskFlow:
+# - api: servidor FastAPI que expone la API REST.
+# - db: base de datos PostgreSQL donde se persisten las tareas.
+# Las variables sensibles se cargan desde el fichero .env.
+
 services:
-  api: 
+  api:
     image: taskflow:1.0
     container_name: taskflow-api
-    ports: 
+    ports:
       - "8000:8000"
     environment:
+      # Cadena de conexión construida a partir de las variables del .env.
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    # La API no arranca hasta que PostgreSQL pase su healthcheck.
     depends_on:
       db:
         condition: service_healthy
-  
+
   db:
     image: postgres:17
     container_name: taskflow-db
@@ -17,8 +24,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Volumen con nombre para persistir los datos entre reinicios.
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # Comprobación periódica de que PostgreSQL está listo para aceptar conexiones.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s

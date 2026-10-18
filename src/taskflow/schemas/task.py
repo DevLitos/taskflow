@@ -1,13 +1,27 @@
+"""Esquemas Pydantic para validación de peticiones y respuestas de tareas.
+
+FastAPI utiliza estos modelos para:
+- Validar automáticamente los datos de entrada.
+- Serializar las respuestas al formato JSON.
+- Generar la documentación interactiva (Swagger / ReDoc).
+"""
+
 from pydantic import BaseModel, Field
 
-# TaskCreate: define qué datos puede enviar el cliente para crear una tarea. 
-# No necesita id porque lo genera PostgreSQL, ni completed porque la base de datos establece False por defecto
+
 class TaskCreate(BaseModel):
-    name:str = Field(min_length=1, max_length=200)
+    """Datos requeridos para crear una nueva tarea.
 
-# Task: define qué datos devolveremos al cliente una vez creada la tarea.
+    No incluye ``id`` (lo genera PostgreSQL) ni ``completed``
+    (la base de datos lo establece a False por defecto).
+    """
+
+    name: str = Field(min_length=1, max_length=200)
+
+
 class Task(BaseModel):
-    id: int
-    name:str = ""
-    completed: bool
+    """Representación completa de una tarea devuelta al cliente."""
 
+    id: int
+    name: str = ""
+    completed: bool
