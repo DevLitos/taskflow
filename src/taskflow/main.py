@@ -1,22 +1,24 @@
 from fastapi import FastAPI
-import os
-import psycopg
+from contextlib import asynccontextmanager
+from taskflow.api.health import router as health_router
+from taskflow.api.tasks import router as tasks_router
+from taskflow.db.database import create_tables
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    yield
 
-@app.get("/")
-def read_root():
-    return {"message": "Running"}
+app = FastAPI(lifespan=lifespan)
 
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
+app.include_router(health_router)
+app.include_router(tasks_router)
 
-@app.get("/db-check")
-def check_db():
-    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
-        result = conn.execute("SELECT 1").fetchone()
-        if result is not None:
-            return {"db_status": "connected"}
-        else:
-            return {"db_status": "not connected"}                                        
+
+# @app.post("/tasks")
+# def add_task():
+#     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
+#         with conn.cursor() as cur:
+#             cur.execute(
+#                 "INSERT INTO test "
+#             )
