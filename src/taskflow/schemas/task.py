@@ -5,9 +5,9 @@ from pydantic import BaseModel, Field
 class TaskCreate(BaseModel):
     name:str = Field(min_length=1, max_length=200)
 
-# TaskRead: define qué datos devolveremos al cliente una vez creada la tarea.
-class TaskRead(BaseModel):
+# Task: define qué datos devolveremos al cliente una vez creada la tarea.
+class Task(BaseModel):
     id: int
-    name:str
+    name:str = ""
     completed: bool
 
